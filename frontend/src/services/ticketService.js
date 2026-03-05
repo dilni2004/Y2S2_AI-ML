@@ -3,6 +3,7 @@ import api from './axiosConfig';
 
 const API_BASE = '/api/tickets';
 
+
 export const getMyTickets = () => api.get('/tickets/my').then(res => res.data);
 export const getDepartments = () => api.get('/departments').then(res => res.data);
 export const getTicketById = (id) => api.get(`/tickets/${id}`).then(res => res.data);
