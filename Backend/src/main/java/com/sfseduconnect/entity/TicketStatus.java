@@ -1,4 +1,4 @@
-package com.sfs.educonnect.entity;
+package com.sfseduconnect.entity;
 
 public enum TicketStatus {
     OPEN,

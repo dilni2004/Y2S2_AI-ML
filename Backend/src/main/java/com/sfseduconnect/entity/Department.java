@@ -1,4 +1,4 @@
-package com.sfs.educonnect.entity;
+package com.sfseduconnect.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

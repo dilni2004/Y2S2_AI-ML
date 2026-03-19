@@ -1,12 +1,13 @@
-package com.sfs.educonnect.repository;
+package com.sfseduconnect.repository;
 
-import com.sfs.educonnect.entity.Ticket;
-import com.sfs.educonnect.entity.TicketStatus;
+import com.sfseduconnect.entity.Ticket;
+import com.sfseduconnect.entity.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     // Student: find own tickets

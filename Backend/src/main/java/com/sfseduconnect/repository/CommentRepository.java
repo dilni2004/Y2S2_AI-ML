@@ -1,6 +1,6 @@
-package com.sfs.educonnect.repository;
+package com.sfseduconnect.repository;
 
-import com.sfs.educonnect.entity.Comment;
+import com.sfseduconnect.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

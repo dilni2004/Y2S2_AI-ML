@@ -1,7 +1,8 @@
-package com.sfs.educonnect.entity;
+package com.sfseduconnect.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attachments")
@@ -15,7 +16,15 @@ public class Attachment {
     private String filePath;        // or cloud URL
     private Long fileSize;
 
+
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
+
+    @ManyToOne
+    @JoinColumn(name = "uploaded_by_id")
+    private User uploadedBy;          // who uploaded
+    
+    @Column(name = "uploaded_at")
+    private LocalDateTime uploadedAt;
 }
