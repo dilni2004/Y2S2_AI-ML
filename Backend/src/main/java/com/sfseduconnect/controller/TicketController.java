@@ -1,10 +1,13 @@
 package com.sfseduconnect.controller;
 
 import com.sfseduconnect.dto.*;
+import com.sfseduconnect.entity.User;
 import com.sfseduconnect.service.TicketService;
+import com.sfseduconnect.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,11 +21,12 @@ import java.util.List;
 public class TicketController {
 
     private final TicketService ticketService;
+    private final UserRepository userRepository;
 
     // Student creates ticket
     @PostMapping
     public ResponseEntity<TicketResponseDTO> createTicket(@RequestBody TicketCreateDTO dto,
-                                                           @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getCurrentUserId(userDetails); // you need to implement extraction
         return ResponseEntity.ok(ticketService.createTicket(dto, userId));
     }
@@ -37,8 +41,8 @@ public class TicketController {
     // Student: add attachments to ticket (update)
     @PostMapping("/{ticketId}/attachments")
     public ResponseEntity<TicketResponseDTO> addAttachments(@PathVariable Long ticketId,
-                                                             @RequestParam("files") List<MultipartFile> files,
-                                                             @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+            @RequestParam("files") List<MultipartFile> files,
+            @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         Long userId = getCurrentUserId(userDetails);
         return ResponseEntity.ok(ticketService.addAttachments(ticketId, files, userId));
     }
@@ -46,7 +50,7 @@ public class TicketController {
     // Student: delete ticket
     @DeleteMapping("/{ticketId}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Long ticketId,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getCurrentUserId(userDetails);
         ticketService.deleteTicket(ticketId, userId);
         return ResponseEntity.noContent().build();
@@ -54,7 +58,8 @@ public class TicketController {
 
     // Department admin: get tickets for their department
     @GetMapping("/department")
-    public ResponseEntity<List<TicketResponseDTO>> getDepartmentTickets(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<TicketResponseDTO>> getDepartmentTickets(
+            @AuthenticationPrincipal UserDetails userDetails) {
         Long deptId = getCurrentUserDepartmentId(userDetails);
         return ResponseEntity.ok(ticketService.getDepartmentTickets(deptId));
     }
@@ -68,19 +73,21 @@ public class TicketController {
 
     // Super admin: get pending approval tickets
     @GetMapping("/pending-approval")
-    public ResponseEntity<List<TicketResponseDTO>> getPendingApproval(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<TicketResponseDTO>> getPendingApproval(
+            @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(ticketService.getPendingApprovalTickets());
     }
 
     // Admin action endpoint (both dept admin and super admin)
     @PostMapping("/action")
     public ResponseEntity<TicketResponseDTO> performAction(@RequestBody AdminActionDTO action,
-                                                           @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         Long adminId = getCurrentUserId(userDetails);
         return ResponseEntity.ok(ticketService.performAdminAction(action, adminId));
     }
 
-    // Helper methods to extract info from UserDetails – implement according to your security setup
+    // Helper methods to extract info from UserDetails – implement according to your
+    // security setup
     private Long getCurrentUserId(UserDetails userDetails) {
         // fetch from your user service
         return 1L; // placeholder
@@ -92,5 +99,12 @@ public class TicketController {
 
     private Long getCurrentUserDepartmentId(UserDetails userDetails) {
         return 1L; // placeholder
+    }
+
+    // Add this method to get current user from security context
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return UserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
